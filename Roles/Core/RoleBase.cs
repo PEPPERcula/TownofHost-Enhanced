@@ -160,7 +160,7 @@ public abstract class RoleBase
     /// <summary>
     /// Other player complete a marked task
     /// </summary>
-    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     { }
     /// <summary>
     /// The role's tasks are needed for a task win

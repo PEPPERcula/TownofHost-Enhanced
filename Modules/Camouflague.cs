@@ -47,7 +47,6 @@ static class PlayerOutfitExtension
                 SkinId = HatManager.Instance.allSkins[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allSkins.Length) : 0].ProdId,
                 VisorId = HatManager.Instance.allVisors[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allVisors.Length) : 0].ProdId,
                 PetId = HatManager.Instance.allPets[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allPets.Length) : 0].ProdId,
-                //NamePlateId = HatManager.Instance.allNamePlates[tempChanceSetRandomSkin >= random.Next(0, 101) ? random.Next(0, HatManager.Instance.allNamePlates.Length) : 0].ProdId,
             },
 
             3 => new NetworkedPlayerInfo.PlayerOutfit().Set("", random.Next(Palette.PlayerColors.Length), "", "", "", "", ""), // Only random colors
@@ -207,8 +206,8 @@ public static class Camouflage
         // if is not Camouflage or need force revert skins
         if (!IsCamouflage || ForceRevert)
         {
-            // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            // if player are a Shapeshifter, change to the id of your current Outfit
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

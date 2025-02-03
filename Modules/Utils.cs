@@ -2148,7 +2148,7 @@ public static class Utils
             {
                 foreach (var realTarget in targetList)
                 {
-                    // if the target is the seer itself, do nothing
+                    // if the target is the Seer itself, do nothing
                     if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected) continue;
 
                     var target = realTarget;
@@ -2159,7 +2159,7 @@ public static class Utils
                     Main.LowLoadUpdateName[target.PlayerId] = true;
                     Main.LowLoadUpdateName[realTarget.PlayerId] = true;
 
-                    // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
+                    // Hide player names in during Mushroom Mixup if seer is alive and Desync Impostor
                     if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
@@ -2535,7 +2535,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");

@@ -169,7 +169,6 @@ internal class ChangeRoleSettings
                     else
                     {
                         string realName = Main.AllPlayerNames.GetValueOrDefault(pc.PlayerId, string.Empty);
-                        //Logger.Info($"player id: {pc.PlayerId} {realName}", "FinallyBegin");
                         if (realName == string.Empty) continue;
 
                         currentName = realName;
@@ -207,14 +206,14 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            // Initialize all roles
+            // Initialize all Roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = role.GetStaticRoleClass();
                 RoleClass?.OnInit();
             }
 
-            // Initialize all add-ons
+            // Initialize all Add-ons
             foreach (var addOn in CustomRoleManager.AddonClasses.Values)
             {
                 addOn?.Init();
@@ -298,22 +297,6 @@ internal class StartGameHostPatch
         if (!ShipStatus.Instance)
         {
             int num = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.MapId, 0, Constants.MapNames.Length - 1);
-            // No need this becouse Dleks map sets in settings
-            /* try
-            {
-                if (num == 0 && AprilFoolsMode.ShouldFlipSkeld())
-                {
-                    num = 3;
-                }
-                else if (num == 3 && !AprilFoolsMode.ShouldFlipSkeld())
-                {
-                    num = 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }*/
             thiz.ShipLoadingAsyncHandle = thiz.ShipPrefabs[num].InstantiateAsync(null, false);
             yield return thiz.ShipLoadingAsyncHandle;
             GameObject result = thiz.ShipLoadingAsyncHandle.Result;
@@ -370,7 +353,7 @@ internal class StartGameHostPatch
 
         try
         {
-            // Block "RpcSetRole" for set desync roles for some players
+            // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 
             // Select custom roles / add-ons
@@ -378,11 +361,11 @@ internal class StartGameHostPatch
             RoleAssign.StartSelect();
             AddonAssign.StartSelect();
 
-            // Set count vanilla roles
+            // Set count vanilla Roles
             RoleAssign.CalculateVanillaRoleCount();
 
             UpdateRoleTypeNums();
-            // Set Rate For Vanilla Roles
+            // Set Rate for Vanilla Roles
             foreach (var roleType in RoleTypeNums)
             {
                 int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
@@ -403,7 +386,7 @@ internal class StartGameHostPatch
             RpcSetRoleReplacer.AssignNormalRoles();
             RpcSetRoleReplacer.SendRpcForNormal();
 
-            // Send all Rpc
+            // Send all RPC
             RpcSetRoleReplacer.Release();
 
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -429,16 +412,16 @@ internal class StartGameHostPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.FFA:
-                    foreach (var pair in Main.PlayerStates)
+                    foreach (var pair in RoleAssign.RoleResult)
                     {
-                        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                        pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
                     }
                     goto EndOfSelectRolePatch;
                 case CustomGameMode.CandR:
                     foreach (var pair in RoleAssign.RoleResult)
                     {
                         if (pair.Value is CustomRoles.Robber) AssignCustomRole(pair.Value, Utils.GetPlayerById(pair.Key));
-                        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value);
+                        pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
                     }
                     goto EndOfSelectRolePatch;
             }
@@ -463,10 +446,10 @@ internal class StartGameHostPatch
             // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
-                // Set roles
+                // Set Roles
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
-                // Set add-ons
+                // Set Add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
@@ -562,7 +545,7 @@ internal class StartGameHostPatch
         var selfRole = isHost ? BaseRole == RoleTypes.Shapeshifter ? RoleTypes.Shapeshifter : hostBaseRole : BaseRole;
         var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
-        // Set Desync role for self and for others
+        // Set Desync Role for self and for others
         foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var targetRoleType = othersRole;
@@ -574,13 +557,13 @@ internal class StartGameHostPatch
             rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? (targetRoleType, targetCustomRole) : (selfRole, role);
         }
 
-        // Set Desync role for others
+        // Set Desync Role for others
         foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = (othersRole, role);
 
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
-        // Set role for host, but not self
+        // Set role for Host, but not self
         // canOverride should be false for the host during assign
         if (!isHost)
         {
@@ -788,7 +771,7 @@ public static class RpcSetRoleReplacer
 
             if (playerId != PlayerControl.LocalPlayer.PlayerId)
             {
-                // canOverride should be false for the host during assign
+                // canOverride should be false for the Host during assign
                 player.SetRole(roleType, false);
             }
 

@@ -369,7 +369,7 @@ static class ExtendedPlayerControl
         {
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
-        HudManagerPatch.LastSetNameDesyncCount++;
+        HudManagerUpdatePatch.LastSetNameDesyncCount++;
 
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for All", "RpcSetNameEx");
         player.RpcSetName(name);
@@ -384,11 +384,10 @@ static class ExtendedPlayerControl
 
         if (!force && Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name)
         {
-            //Logger.info($"Cancel:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
             return;
         }
         Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
-        HudManagerPatch.LastSetNameDesyncCount++;
+        HudManagerUpdatePatch.LastSetNameDesyncCount++;
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
         if (seer == null || player == null) return;
@@ -659,9 +658,9 @@ static class ExtendedPlayerControl
         List<Vent> vents = new(ShipStatus.Instance.AllVents);
         vents.Sort((v1, v2) => Vector2.Distance(playerpos, v1.transform.position).CompareTo(Vector2.Distance(playerpos, v2.transform.position)));
 
-        // If player is inside a vent, we get the nearby vents that the player can snapto and insert them to the top of the list
-        // Idk how to directly get the vent a player is in, so just assume the closet vent from the player is the vent that player is in
-        // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a vent and inVent flags can return true there
+        // If player is inside a Vent, we get the nearby Vents that the player can snapto and insert them to the top of the list
+        // Idk how to directly get the Vent a player is in, so just assume the closet Vent from the player is the Vent that player is in
+        // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a Vent and inVent flags can return true there
         if ((player.MyPhysics.Animations.IsPlayingEnterVentAnimation() || player.walkingToVent || player.inVent) && vents[0] != null)
         {
             var nextvents = vents[0].NearbyVents.ToList();
@@ -679,7 +678,7 @@ static class ExtendedPlayerControl
     }
 
     /// <summary>
-    /// Update vent interaction if player again can use vent
+    /// Update vent interaction if player again can use Vent
     /// Or vice versa if he cannot use it
     /// </summary>
     public static void RpcSetVentInteraction(this PlayerControl player)
@@ -790,7 +789,7 @@ static class ExtendedPlayerControl
         }
         else if (PlayerControl.LocalPlayer.PlayerId == target.PlayerId)
         {
-            //if target is the host, except for guardian angel, that breaks it.
+            //if target is the host, except for Guardian Angel, that breaks it.
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
@@ -800,12 +799,6 @@ static class ExtendedPlayerControl
             writer.Write(0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        /*
-            When a player puts up a barrier, the cooldown of the ability is reset regardless of the player's position.
-            Due to the addition of logs, it is no longer possible to put up a barrier to nothing, so we have changed it to put up a 0 second barrier to oneself instead.
-            This change disables guardian angel as a position.
-            The cooldown of the host resets directly.
-        */
     }
     public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
@@ -930,11 +923,11 @@ static class ExtendedPlayerControl
     public static int GetClientId(this NetworkedPlayerInfo playerData) => playerData == null ? -1 : playerData.ClientId;
 
     /// <summary>
-    /// Only roles (no add-ons)
+    /// Only Roles (no Add-ons)
     /// </summary>
     public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player) => player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
     /// <summary>
-    /// Only roles (no add-ons)
+    /// Only Roles (no Add-ons)
     /// </summary>
     public static CustomRoles GetCustomRole(this PlayerControl player)
     {
@@ -1065,7 +1058,6 @@ static class ExtendedPlayerControl
     public static void ReactorFlash(this PlayerControl pc, float delay = 0f)
     {
         if (pc == null) return;
-        // Logger.Info($"{pc}", "ReactorFlash");
         var systemtypes = Utils.GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
 
@@ -1365,7 +1357,6 @@ static class ExtendedPlayerControl
         => (seer.Is(CustomRoles.Visionary))
         && !target.Data.IsDead;
 
-    //private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;

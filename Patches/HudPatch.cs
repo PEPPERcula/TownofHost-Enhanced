@@ -8,8 +8,17 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
+class HudManagerStartPatch
+{
+    public static void Postfix(HudManager __instance)
+    {
+        __instance.gameObject.AddComponent<OptionShower>().hudManager = __instance;
+    }
+}
+
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-class HudManagerPatch
+class HudManagerUpdatePatch
 {
     public static bool ShowDebugText = false;
     public static int LastCallNotifyRolesPerSecond = 0;
@@ -57,9 +66,7 @@ class HudManagerPatch
                     TempLowerInfoText = new GameObject("CountdownText");
                     TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
                     LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
@@ -78,9 +85,7 @@ class HudManagerPatch
                     TempLowerInfoText = new GameObject("CountdownText");
                     TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
                     LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;

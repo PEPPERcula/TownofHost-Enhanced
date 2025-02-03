@@ -203,6 +203,8 @@ public class PlayerState(byte playerId)
         {
             case CustomRoles.LastImpostor:
                 SubRoles.Remove(CustomRoles.Mare);
+                SubRoles.Remove(CustomRoles.Overclocked);
+                SubRoles.Remove(CustomRoles.Underclocked);
                 break;
 
             case CustomRoles.Madmate:

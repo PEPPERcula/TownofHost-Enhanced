@@ -57,7 +57,7 @@ static class ExtendedPlayerControl
     }
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
-        List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        var roles = player.GetCustomSubRoles().ToList();
         roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
         roles.Shuffle();
         foreach (var addon in roles)
@@ -191,7 +191,7 @@ static class ExtendedPlayerControl
 
                     break;
                 }
-            // Normal role to desync role
+            // Normal Role to Desync Role
             case (false, true):
                 {
                     foreach (var seer in Main.AllPlayerControls)
@@ -239,8 +239,8 @@ static class ExtendedPlayerControl
 
                     break;
                 }
-            // Desync role to desync role
-            // Normal role to normal role
+            // Desync Role to Desync Role
+            // Normal Role to Normal Role
             default:
                 {
                     var playerIsDesync = player.HasDesyncRole();

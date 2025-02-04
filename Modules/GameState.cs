@@ -453,6 +453,7 @@ public class TaskState
         }
 
         hasTasks = true;
+        CompletedTasksCount = 0;
         AllTasksCount = player.Data.Tasks.Count;
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");

@@ -51,7 +51,7 @@ public class Main : BasePlugin
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 16.1
-    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 2
+    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 2.1
     public static readonly bool fullRelease = true; // Latest: v2.1.1
 
     public static bool hasAccess = true;
@@ -936,6 +936,7 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
+    Harvester,
     HexMaster,
     Illusionist,
     Jinx,

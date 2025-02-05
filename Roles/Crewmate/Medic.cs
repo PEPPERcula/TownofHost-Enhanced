@@ -205,7 +205,6 @@ internal class Medic : RoleBase
         {
             TempMarkProtected.Clear();
             SendRPC();
-            NotifyRoles();
         }
     }
     private void AfterMedicDeadTask(PlayerControl target)

@@ -89,7 +89,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.DoNotifyRoles(NoCache: true);
+            Utils.DoNotifyRoles(ForceLoop: false, NoCache: true);
         }
 
         if (GameStates.IsNormalGame)
@@ -170,7 +170,6 @@ class SetUpRoleTextPatch
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
 
-            Utils.DoNotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -563,6 +562,12 @@ class BeginCrewmatePatch
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
                         break;
 
+                    case CustomRoles.Dictator:
+                    case CustomRoles.Mayor:
+                    case CustomRoles.Swapper:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.Chat.warningSound;
+                        break;
+
                     case CustomRoles.Saboteur:
                     case CustomRoles.Inhibitor:
                     case CustomRoles.Mechanic:
@@ -575,6 +580,12 @@ class BeginCrewmatePatch
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                         break;
 
+                    case CustomRoles.ChiefOfPolice:
+                    case CustomRoles.Deputy:
+                    case CustomRoles.Sheriff:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                        break;
+
                     case CustomRoles.GM:
                         __instance.TeamTitle.text = Utils.GetRoleName(role);
                         __instance.TeamTitle.color = Utils.GetRoleColor(role);
@@ -584,8 +595,6 @@ class BeginCrewmatePatch
                         __instance.ImpostorText.text = GetString("SubText.GM");
                         break;
 
-                    case CustomRoles.ChiefOfPolice:
-                    case CustomRoles.Sheriff:
                     case CustomRoles.Veteran:
                     case CustomRoles.Knight:
                     case CustomRoles.KillingMachine:
@@ -1005,9 +1014,17 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (Main.CurrentServerIsVanilla)
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
 
-        Utils.DoNotifyRoles(NoCache: true);
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

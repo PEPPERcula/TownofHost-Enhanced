@@ -158,6 +158,14 @@ public static class Camouflage
                     {
                         pc.RpcRemovePet();
                     }
+                    if (Main.CurrentServerIsVanilla)
+                    {
+                        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                    }
+                    else
+                    {
+                        Utils.DoNotifyRoles();
+                    }
                 }
             }
             else

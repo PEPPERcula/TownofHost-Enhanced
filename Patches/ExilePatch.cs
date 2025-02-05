@@ -178,7 +178,16 @@ class ExileControllerWrapUpPatch
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Utils.NotifyRoles(NoCache: true);
+                
+                if (Main.CurrentServerIsVanilla)
+                {
+                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                }
+                else
+                {
+                    Utils.DoNotifyRoles();
+                }
+                
             }, 1.2f, "AfterMeetingDeathPlayers Task");
 
             _ = new LateTask(() =>

@@ -187,7 +187,6 @@ class ExileControllerWrapUpPatch
                 {
                     Utils.DoNotifyRoles();
                 }
-                
             }, 1.2f, "AfterMeetingDeathPlayers Task");
 
             _ = new LateTask(() =>

@@ -156,11 +156,9 @@ namespace TOHE.Modules
             writer.Recycle();
         }
 
-        protected virtual void OnFixedUpdate()
+        protected virtual void OnFixedUpdate(bool lowload, int timerLowLoad)
         {
-            //
             // Need to respawn player every 20s because of 30s timeout
-            // 
             PlayerControlTimer += Time.fixedDeltaTime;
             if (PlayerControlTimer > 20f)
             {
@@ -296,7 +294,7 @@ namespace TOHE.Modules
                     Hide(pc);
                 }
                 _ = new LateTask(() =>
-                { // Fix for host
+                { // Fix for Host
                     if (!HiddenList.Contains(PlayerControl.LocalPlayer.PlayerId))
                         playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
                 }, 0.1f);
@@ -313,6 +311,28 @@ namespace TOHE.Modules
                     }
                 }, 0.4f, "CNO_RespawnPlayerControl_FixModdedCNO");
                 PlayerControlTimer = 0f;
+
+                return;
+            }
+
+            // Host is the -2 owner of NT, dirty the NT and host will serialize it automatically.
+            var NT = playerControl.NetTransform;
+
+            if (NT == null) return;
+            playerControl.Collider.enabled = false;
+            if (Position != NT.body.position)
+            {
+                Transform transform = NT.transform;
+                NT.body.position = Position;
+                transform.position = Position;
+                NT.body.velocity = Vector2.zero;
+                NT.lastSequenceId++;
+            }
+
+            if (NT.HasMoved())
+            {
+                NT.sendQueue.Enqueue(NT.body.position);
+                NT.SetDirtyBit(2U);
             }
         }
 
@@ -335,7 +355,7 @@ namespace TOHE.Modules
             AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
             msg.EndMessage();
 
-            // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
+            // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
             // so it will disable checks regarding it
             if (GameStates.IsVanillaServer)
             {
@@ -447,6 +467,7 @@ namespace TOHE.Modules
             }, 0.2f);
 
             Position = position;
+            playerControl.Collider.enabled = false;
             PlayerControlTimer = 0f;
             Sprite = sprite;
             ++MaxId;
@@ -455,7 +476,7 @@ namespace TOHE.Modules
             AllObjects.Add(this);
 
             _ = new LateTask(() =>
-            { // Fix for host
+            { // Fix for Host
                 playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
             }, 0.1f);
             _ = new LateTask(() =>
@@ -468,7 +489,7 @@ namespace TOHE.Modules
                 sender.SendMessage();
             }, 0.4f, "CNO_CreatePlayerControl_FixModdedCNO");
         }
-        public static void FixedUpdate() => AllObjects.ToArray().Do(x => x.OnFixedUpdate());
+        public static void FixedUpdate(bool lowload, int timerLowLoad) => AllObjects.ToArray().Do(x => x.OnFixedUpdate(lowload, timerLowLoad));
         public static void AfterMeetingTasks() => AllObjects.ToArray().Do(x => x.OnAfterMeetingTasks());
         public static CustomNetObject Get(int id) => AllObjects.FirstOrDefault(x => x.Id == id);
         public static void DespawnOnQuit(byte Playerid) => AllObjects.Where(x => x.OwnerId == Playerid).ToArray().Do(x => x.Despawn());
@@ -503,9 +524,9 @@ namespace TOHE.Modules
             CreateNetObject($"<size={Size}><line-height=72%><font=\"VCR SDF\"><br><#0000>███<#ff0000>█<#0000>███<br><#ff0000>█<#0000>█<#ff0000>███<#0000>█<#ff0000>█<br>█<#ff8000>██<#ffff00>█<#ff8000>██<#ffff00>█<br>██<#ff8000>█<#ffff00>█<#ff8000>█<#ffff00>██<br><#ff8000>█<#ffff80>██<#ffff00>█<#ffff80>██<#ff8000>█<br><#0000>█<#ff8000>█<#ffff80>███<#ff8000>█<#0000>█<br>██<#ff8000>███<#0000>██", position);
         }
 
-        protected override void OnFixedUpdate()
+        protected override void OnFixedUpdate(bool lowload, int timerLowLoad)
         {
-            base.OnFixedUpdate();
+            base.OnFixedUpdate(lowload, timerLowLoad);
 
             Timer += Time.deltaTime;
             if (Timer >= Duration / 5f && Frame == 0)

@@ -29,6 +29,7 @@ class OnGameJoinedPatch
             Main.VersionCheat.Value = false;
 
         ChatUpdatePatch.DoBlockChat = false;
+        Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
@@ -75,7 +76,7 @@ class OnGameJoinedPatch
                     if (AURoleOptions.GuardianAngelCooldown == 0f)
                         AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
 
-                    // if custom game mode is HideNSeekTOHO in normal game, set standart
+                    // if custom Gamemode is HideNSeekTOHO in normal game, set standart
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO)
                     {
                         // Select standart
@@ -87,7 +88,7 @@ class OnGameJoinedPatch
                 case GameModes.HideNSeek:
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 
-                    // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHO
+                    // if custom Gamemode is Standard/FFA in H&S game, set HideNSeekTOHO
                     if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
                     {
                         // Select HideNSeekTOHO
@@ -280,7 +281,6 @@ public static class OnPlayerJoinedPatch
         {
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
-            //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
 
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)

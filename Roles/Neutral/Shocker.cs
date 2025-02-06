@@ -38,10 +38,10 @@ internal class Shocker : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
-        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, "ShockerAbilityCooldown", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
-        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, "ShockerAbilityDuration", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
         ShockerAbilityPerRound = IntegerOptionItem.Create(Id + 12, "ShockerAbilityPerRound", new(0, 10, 1), 2, TabGroup.NeutralRoles, false)

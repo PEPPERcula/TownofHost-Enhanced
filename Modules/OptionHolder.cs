@@ -438,6 +438,7 @@ public static class Options
     public static OptionItem NeutralCanBecomeGhost;
     public static OptionItem MaxImpGhost;
     public static OptionItem MaxCrewGhost;
+    public static OptionItem MaxNeutralGhost;
     public static OptionItem DefaultAngelCooldown;
 
 
@@ -560,6 +561,7 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
+    public static OptionItem SpawnOneRandomKillingFraction;
 
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
@@ -781,6 +783,9 @@ public static class Options
         NeutralWinTogether = BooleanOptionItem.Create(60018, "NeutralWinTogether", false, TabGroup.NeutralRoles, false)
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60035, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
 
         TextOptionItem.Create(10000015, "CovenInfo", TabGroup.CovenRoles)
             .SetGameMode(CustomGameMode.Standard)
@@ -1034,6 +1039,12 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
         #endregion
+
+        TextOptionItem.Create(10000101, "RoleType.NeutralGhost", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(100, 100, 100, byte.MaxValue));
+        
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralGhosts).ForEach(r => r.SetupCustomOption());
 
         yield return null;
 

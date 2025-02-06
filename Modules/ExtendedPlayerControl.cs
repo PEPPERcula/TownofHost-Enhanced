@@ -82,7 +82,7 @@ static class ExtendedPlayerControl
             player.SetRole(role, true);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, RpcSendOption, clientId);
         writer.Write((ushort)role);
         writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -161,7 +161,7 @@ static class ExtendedPlayerControl
                             remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                         else remeberRoleType = newRoleType;
 
-                        // Set role type for seer
+                        // Set role type for Seer
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
                         player.RpcSetRoleDesync(remeberRoleType, seerClientId);
 
@@ -427,7 +427,7 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (clientId == -1) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, RpcSendOption, clientId);
         writer.Write(seer.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -739,7 +739,7 @@ static class ExtendedPlayerControl
             return;
         }
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckVanish, SendOption.None, seer.GetClientId());
-        messageWriter.Write(0); // not used, lol
+        messageWriter.Write(0);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
     public static void RpcStartVanishDesync(this PlayerControl player, PlayerControl seer)
@@ -818,7 +818,7 @@ static class ExtendedPlayerControl
         }
         else if (PlayerControl.LocalPlayer.PlayerId == target.PlayerId)
         {
-            //if target is the host, except for Guardian Angel, that breaks it.
+            //If target is the Host, except for Guardian Angel, that breaks it.
             PlayerControl.LocalPlayer.Data.Role.SetCooldown();
         }
         else
@@ -831,7 +831,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
-        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
+        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, RpcSendOption, target.GetClientId());
         messageWriter.Write((byte)systemType);
         messageWriter.WriteNetObject(target);
         messageWriter.Write((byte)amount);
@@ -916,8 +916,35 @@ static class ExtendedPlayerControl
             return;
         }
 
+        var sendOption = SendOption.Reliable;
+
+        if (Main.CurrentServerIsVanilla)
+        {
+            if (!FixedUpdateInNormalGamePatch.BufferTime.TryGetValue(player.PlayerId, out var bufferTime))
+            {
+                Logger.Error($"Canceled RpcTeleport bcz bufferTime is null.", "RpcTeleport");
+                return;
+            }
+
+            if (!FixedUpdateInNormalGamePatch.TeleportBuffer.TryGetValue(player.PlayerId, out var teleportBuffer))
+            {
+                FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
+            }
+            else
+            {
+                if (bufferTime >= teleportBuffer + 6)
+                {
+                    FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
+                }
+                else
+                {
+                    sendOption = SendOption.None;
+                }
+            }
+        }
+
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, sendOption);
         NetHelpers.WriteVector2(position, messageWriter);
         messageWriter.Write(newSid);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -1317,7 +1344,7 @@ static class ExtendedPlayerControl
     public static bool CheckForInvalidMurdering(this PlayerControl killer, PlayerControl target, bool checkCanUseKillButton = false) => CheckMurderPatch.CheckForInvalidMurdering(killer, target, checkCanUseKillButton);
     public static void NoCheckStartMeeting(this PlayerControl reporter, NetworkedPlayerInfo target, bool force = false)
     {
-        //Method that can cause a meeting to occur regardless of whether it is in sabotage.
+        //Method that can cause a meeting to occur regardless of whether it's in Sabotage.
         //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
 
@@ -1470,8 +1497,6 @@ static class ExtendedPlayerControl
     }
     public static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
-
         if (seer.Is(Custom_Team.Impostor))
         {
             // Impostor know Madmate
@@ -1624,7 +1649,7 @@ static class ExtendedPlayerControl
         {
             return true;
         }
-        //if target is null, it is not alive
+        //If target is null, it's not alive
         if (target == null)
         {
             return false;
@@ -1640,13 +1665,13 @@ static class ExtendedPlayerControl
         {
             return false;
         }
-        //if target is null, is disconnected
+        //If target is null, is disconnected
         if (target == null)
         {
             return true;
         }
 
-        //if the target status is disconnected
+        //If the target status is disconnected
         return !Main.PlayerStates.TryGetValue(target.PlayerId, out var playerState) || playerState.Disconnected;
     }
     public static bool IsExiled(this PlayerControl target)
@@ -1657,4 +1682,5 @@ static class ExtendedPlayerControl
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
+    public static SendOption RpcSendOption => Main.CurrentServerIsVanilla ? SendOption.None : SendOption.Reliable;
 }

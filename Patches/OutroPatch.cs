@@ -24,7 +24,7 @@ class EndGamePatch
     {
         GameStates.InGame = false;
 
-        // if game is H&S or Host no have mod
+        // If game is H&S or Host doesn't have Mod
         if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
 
         Logger.Info("-----------Game over-----------", "Phase");
@@ -43,7 +43,7 @@ class EndGamePatch
                         Main.PlayerStates[pvc].MainRole = prevrole;
 
 
-                        // PlayerControl is already destoryed here. bruh wtf
+                        // PlayerControl is already destoryed here
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
                         writer.Write(pvc);
                         writer.WritePacked((int)prevrole);
@@ -90,9 +90,9 @@ class EndGamePatch
                 if (date == DateTime.MinValue) continue;
                 var killerId = kvp.Value.GetRealKiller();
                 var targetId = kvp.Key;
-                sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
+                sb.Append($"\n{date:T} {Main.AllPlayerNames[targetId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(targetId, targetId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(targetId, summary: true))}) [{Utils.GetVitalText(kvp.Key)}]");
                 if (killerId != byte.MaxValue && killerId != targetId)
-                    sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
+                    sb.Append($"\n\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, false, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
             }
         else
         {
@@ -153,7 +153,7 @@ class EndGamePatch
         foreach (var pc in winner.ToArray())
         {
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw && pc.Is(CustomRoles.GM)) continue;
-            // Check "Contains" to avoid adding players twice
+            // Check "Contains" to avoid adding Players twice
             if (Main.winnerList.Contains(pc.PlayerId)) continue;
 
             EndGameResult.CachedWinners.Add(new CachedPlayerData(pc.Data));
@@ -193,7 +193,7 @@ class SetEverythingUpPatch
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
         //#######################################
-        //      ==Victory faction display==
+        //      ==Victory Faction Display==
         //#######################################
 
         __instance.WinText.alignment = TextAlignmentOptions.Right;
@@ -224,7 +224,6 @@ class SetEverythingUpPatch
         {
             CustomWinnerText = GetWinnerRoleName(winnerRole);
             CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
-            //     __instance.WinText.color = Utils.GetRoleColor(winnerRole);
             __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             if (winnerRole.IsNeutral())
             {
@@ -269,9 +268,7 @@ class SetEverythingUpPatch
                 WinnerText.color = Color.gray;
                 break;
             case CustomWinner.NiceMini:
-                //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.NiceMini);
-                //    WinnerText.text = GetString("NiceMiniDied");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.NiceMini);
                 break;
             case CustomWinner.Neutrals:
@@ -325,10 +322,8 @@ class SetEverythingUpPatch
 
         LastWinsText = WinnerText.text/*.RemoveHtmlTags()*/;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         //########################################
-        //     ==The final result indicates==
+        //     ==The Final Result Indicates==
         //########################################
 
         var Pos = Camera.main.ViewportToWorldPoint(new Vector3(0f, 1f, Camera.main.nearClipPlane));
@@ -386,9 +381,5 @@ class SetEverythingUpPatch
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
 
         Utils.ShowLastRoles(sendMessage: false);
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //Utils.ApplySuffix();
     }
 }

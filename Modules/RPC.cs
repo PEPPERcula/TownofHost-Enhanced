@@ -21,8 +21,8 @@ public enum CustomRPC : byte // 185/255 USED
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
 
-    // Adding Role rpcs that overrides TOHE section and changing BetterCheck will be rejected
-    // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
+    // Adding Role RPCs that overrides TOHE section and changing BetterCheck will be rejected
+    // Sync Role Skill can be used under most cases so you should not make a new RPC unless it's necessary
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -116,6 +116,7 @@ public enum CustomRPC : byte // 185/255 USED
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
+    //C&R
     SyncCandRData,
 }
 [Obfuscation(Exclude = true)]
@@ -133,7 +134,7 @@ public enum Sounds
 class ShouldProcessRpcPatch
 {
     /*
-     * Sinse stupid AU code added check process rpc for outfit players, so need patch this
+     * Sinse AU code added check process RPC for outfit players, so need patch this
      * Always return true because the check is absolutely pointless
      */
     public static bool Prefix(PlayerControl __instance, RpcCalls rpc, byte sequenceId, ref bool __result)
@@ -471,9 +472,6 @@ internal class RPCHandlerPatch
                 byte killerId = reader.ReadByte();
                 RPC.SetRealKiller(tarid, killerId);
                 break;
-            //case CustomRPC.SetTrackerTarget:
-            //    Tracker.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SyncJailerData:
                 Jailer.ReceiveRPC(reader);
                 break;
@@ -612,7 +610,11 @@ internal class RPCHandlerPatch
             case CustomRPC.FixModdedClientCNO:
                 var CNO = reader.ReadNetObject<PlayerControl>();
                 bool active = reader.ReadBoolean();
-                CNO?.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                if (CNO != null)
+                {
+                    CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                    CNO.Collider.enabled = false;
+                }
                 break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
@@ -666,9 +668,6 @@ internal class PlayerPhysicsRPCHandlerPatch
 
     public static bool Prefix(PlayerPhysics __instance, byte callId, MessageReader reader)
     {
-        //var rpcType = (RpcCalls)callId;
-        //MessageReader subReader = MessageReader.Get(reader);
-
         if (EAC.PlayerPhysicsRpcCheck(__instance, callId, reader)) return false;
 
         var player = __instance.myPlayer;
@@ -681,7 +680,6 @@ internal class PlayerPhysicsRPCHandlerPatch
 
         if (!Main.MeetingIsStarted)
         {
-            //__instance.myPlayer.walkingToVent = true;
             VentSystemDeterioratePatch.ForceUpadate = true;
         }
 
@@ -942,7 +940,6 @@ internal static class RPC
 
         if (!AmongUsClient.Instance.IsGameOver)
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-        //    HudManager.Instance.Chat.SetVisible(true);
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }

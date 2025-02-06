@@ -176,7 +176,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// Check Murder as Killer in target
+    /// Check Murder as Killer in Target
     /// </summary>
     public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
@@ -218,7 +218,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
 
-        // Check in target
+        // Check in Target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
             __state = true;
@@ -267,7 +267,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "OnCheckMurderAsKiller");
 
-        // Check murder as killer
+        // Check murder as Killer
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
@@ -289,7 +289,7 @@ public static class CustomRoleManager
             target = DollMaster.SwapPlayerInfo(target);
         }
 
-        // Check if killer is a true killing role and Target is possessed by Dollmaster
+        // Check if Killer is a true killing role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
             if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
                 if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
@@ -312,17 +312,17 @@ public static class CustomRoleManager
         return true;
     }
     /// <summary>
-    /// Tasks after killer murder target
+    /// Tasks after Killer murder Target
     /// </summary>
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         // ############-INFO-##############
-        // When using this code, keep in mind that killer and target can be equal (Suicide)
+        // When using this code, keep in mind that Killer and Target can be equal (Suicide)
         // And the player can also die during the Meeting
         // ################################
 
-        PlayerControl trueDMKiller = killer; // Save real killer.
-        killer = DollMaster.SwapPlayerInfo(killer); // If "killer" is possessed by the Dollmaster swap each other's controllers.
+        PlayerControl trueDMKiller = killer; // Save real Killer.
+        killer = DollMaster.SwapPlayerInfo(killer); // If Killer is possessed by the Dollmaster swap each other's controllers.
 
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
@@ -333,10 +333,10 @@ public static class CustomRoleManager
         // Check suicide
         var isSuicide = killer.PlayerId == target.PlayerId;
 
-        // target was murder by killer
+        // Target was murder by Killer
         targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
 
-        // Check target add-ons
+        // Check target Add-ons
         if (targetSubRoles.Any())
             foreach (var subRole in targetSubRoles.ToArray())
             {
@@ -377,10 +377,10 @@ public static class CustomRoleManager
                 }
             }
 
-        // Killer murder target
+        // Killer murder Target
         killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting, isSuicide);
 
-        // Check killer add-ons
+        // Check Killer Add-ons
         if (killerSubRoles.Any())
             foreach (var subRole in killerSubRoles.ToArray())
             {
@@ -433,9 +433,9 @@ public static class CustomRoleManager
     /// For interfering with other roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime,int timerLowLoad)
     {
-        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime);
+        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime, timerLowLoad);
 
         if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
@@ -459,7 +459,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// When others players on entered to vent
+    /// When others players on entered to Vent
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -468,7 +468,7 @@ public static class CustomRoleManager
 
     private static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = [];
     /// <summary>
-    /// If seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud or NotifyRoles
+    /// If Seer == seen then GetMarkOthers called from FixedUpadte or MeetingHud or NotifyRoles
     /// </summary>
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
@@ -482,7 +482,7 @@ public static class CustomRoleManager
 
     private static HashSet<Func<PlayerControl, PlayerControl, bool, bool, string>> LowerOthers = [];
     /// <summary>
-    /// If seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
+    /// If Seer == seen then GetMarkOthers called from FixedUpadte or NotifyRoles
     /// </summary>
     public static string GetLowerTextOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
@@ -530,7 +530,7 @@ public static class CustomRoleManager
         OtherCollectionsSet = true;
     }
 
-    // ADDONS ////////////////////////////
+    // ADDONS //
 
     public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
     {

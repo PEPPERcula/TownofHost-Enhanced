@@ -80,12 +80,12 @@ internal class DollMaster : RoleBase
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (controllingTarget != null && DollMasterTarget != null)
         {
-            // If DollMaster can't be teleported start waiting to unpossess.
+            // If DollMaster can't be teleported start waiting to Unpossess.
             WaitToUnPossessUpdate(DollMasterTarget, controllingTarget);
         }
         if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
@@ -110,10 +110,10 @@ internal class DollMaster : RoleBase
         if (lowLoad) return;
         if (controllingTarget != null && target == controllingTarget)
         {
-            // Boot Possessed Player from vent if inside of a vent and if waiting.
+            // Boot Possessed Player from Vent if inside of a Vent and if waiting.
             BootPossessedPlayerFromVentUpdate(target);
 
-            // Set speed
+            // Set Speed
             if (IsControllingPlayer && Main.AllPlayerSpeed[target.PlayerId] >= Main.MinSpeed)
             {
                 Main.AllPlayerSpeed[target.PlayerId] = Main.MinSpeed;

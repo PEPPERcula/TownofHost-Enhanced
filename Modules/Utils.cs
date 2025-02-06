@@ -40,9 +40,13 @@ public static class Utils
         if (!AmongUsClient.Instance.AmHost) return;
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, player.OwnerId);
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, ExtendedPlayerControl.RpcSendOption, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+            var writer2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, -1);
+            writer2.Write(GetString("NotifyGameEnding"));
+            AmongUsClient.Instance.FinishRpcImmediately(writer2);
         }
     }
 
@@ -492,7 +496,7 @@ public static class Utils
 
                 if (seer == null || target == null) return (RoleText, RoleColor);
 
-                // if player last imp
+                // If player last Impostor
                 if (LastImpostor.currentId == targetId)
                     RoleText = GetRoleString("Last-") + RoleText;
 
@@ -509,7 +513,7 @@ public static class Utils
                     }
                     static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
 
-                    // if the player is playing on a Console platform
+                    // If the player is playing on a Console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
                         // By default, censorship is enabled on consoles
@@ -612,8 +616,6 @@ public static class Utils
         }
 
         if (States.Disconnected) return false;
-        //if (playerData.Role.IsImpostor)
-        //    hasTasks = false; //Tasks are determined based on CustomRole
 
         if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
@@ -632,7 +634,7 @@ public static class Utils
                 hasTasks = false;
                 break;
             default:
-                // player based on an impostor not should have tasks
+                // player based on an Impostor not should have tasks
                 if (States.RoleClass.ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom)
                     hasTasks = false;
                 break;
@@ -805,7 +807,6 @@ public static class Utils
         foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Tab is TabGroup.SystemSettings && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             sb.Append($"\n{opt.GetName(true)}: {opt.GetString()}");
-            //ShowChildrenSettings(opt, ref sb);
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
@@ -813,7 +814,6 @@ public static class Utils
         foreach (var opt in OptionItem.AllOptions.Where(x => x.GetBool() && x.Parent == null && x.Tab is TabGroup.ModSettings && !x.IsHiddenOn(Options.CurrentGameMode)).ToArray())
         {
             sb.Append($"\n{opt.GetName(true)}: {opt.GetString()}");
-            //ShowChildrenSettings(opt, ref sb);
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
@@ -1496,8 +1496,6 @@ public static class Utils
 
         return [.. result];
     }
-    //private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
-
 
     public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
@@ -1544,17 +1542,13 @@ public static class Utils
                 text.SplitMessage().Do(x => SendMessage(x, sendTo, title, logforChatManager, noReplay, false));
                 return;
             }
-            //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
-            //{
-            //    text = text.RemoveHtmlTagsIfNeccessary();
-            //}
         }
         catch (Exception exx)
         {
             Logger.Warn($"Error after try split the msg {text} at: {exx}", "Utils.SendMessage.SplitMessage");
         }
 
-        // set noReplay to false when you want to send previous sys msg or do not want to add a sys msg in the history
+        // set noReplay to false when you want to send previous System Message or don't want to add a System Message in the history
         if (!noReplay && GameStates.IsInGame) ChatManager.AddSystemChatHistory(sendTo, text);
 
         if (!logforChatManager)
@@ -1593,7 +1587,6 @@ public static class Utils
         if (startColorHex.Length != 6 || endColorHex.Length != 6)
         {
             Logger.Error("Invalid color hex code. Hex code should be 6 characters long (without #) (e.g., FFFFFF).", "GradientColorText");
-            //throw new ArgumentException("Invalid color hex code. Hex code should be 6 characters long (e.g., FFFFFF).");
             return text;
         }
 
@@ -1617,7 +1610,6 @@ public static class Utils
 
 
             string colorHex = ColorToHex(new Color(r, g, b, a));
-            //Logger.Msg(colorHex, "color");
             gradientText += $"<color=#{colorHex}>{text[i]}</color>";
         }
 
@@ -1640,12 +1632,12 @@ public static class Utils
     }
     public static void ApplySuffix(PlayerControl player)
     {
-        // Only host
+        // Only Host
         if (!AmongUsClient.Instance.AmHost || player == null) return;
-        // Check invalid color
+        // Check invalid Color
         if (player.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= player.Data.DefaultOutfit.ColorId) return;
 
-        // Hide all tags
+        // Hide all Tags
         if (Options.HideAllTagsAndText.GetBool())
         {
             SetRealName();
@@ -1691,7 +1683,7 @@ public static class Utils
             if (IsPlayerVIP(player.FriendCode))
             {
                 string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
-                //static color
+                //Static Color
                 if (!Options.GradientTagsOpt.GetBool())
                 {
                     string startColorCode = "ffff00";
@@ -1704,7 +1696,7 @@ public static class Utils
                     //"ffff00"
                     modtag = $"<color=#{startColorCode}>{GetString("VipTag")}</color>";
                 }
-                else //gradient color
+                else //Gradient Color
                 {
                     string startColorCode = "ffff00";
                     string endColorCode = "ffff00";
@@ -1735,7 +1727,7 @@ public static class Utils
             if (IsPlayerModerator(player.FriendCode))
             {
                 string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
-                //static color
+                //Static Color
                 if (!Options.GradientTagsOpt.GetBool())
                 {
                     string startColorCode = "8bbee0";
@@ -1944,7 +1936,7 @@ public static class Utils
             RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
         }
 
-        // Format addons
+        // Format Add-ons
         bool isFirstSub = true;
         foreach (var subRole in player.GetCustomSubRoles().ToArray())
         {
@@ -1960,7 +1952,7 @@ public static class Utils
 
         var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
-        // Privately sent name.
+        // Privately sent name
         player.RpcSetNamePrivate(SelfName, player, force: true);
     }
 
@@ -1980,7 +1972,7 @@ public static class Utils
         }
         else
         {
-            // When some one press report button but NotifyRoles is not for meeting
+            // When some one press Report button but NotifyRoles is not for meeting
             if (Main.MeetingIsStarted && !isForMeeting) return;
         }
 
@@ -1996,7 +1988,7 @@ public static class Utils
         }
         else
         {
-            // When some one press report button but NotifyRoles is not for meeting
+            // When some one press Report button but NotifyRoles is not for meeting
             if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
         }
 
@@ -2045,7 +2037,7 @@ public static class Utils
             }
             else
             {
-                // Clear marker after name seer
+                // Clear marker after name Seer
                 SelfMark.Clear();
 
                 // ====== Add SelfMark for Seer ======

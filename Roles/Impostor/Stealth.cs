@@ -79,14 +79,14 @@ internal class Stealth : RoleBase
             player.MarkDirtySettings();
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         // when you're darkening someone
         if (darkenedPlayers == null) return;
 
         // reduce timer
         darkenTimer -= Time.fixedDeltaTime;
-        // When the timer reaches 0, return everyone's vision and reset the timer and darkening player.
+        // When the timer reaches 0, return everyone's vision and reset the timer and darkening player
         if (darkenTimer <= 0)
         {
             ResetDarkenState();
@@ -138,7 +138,7 @@ internal class Stealth : RoleBase
         seen ??= seer;
         var Player = _Player;
 
-        // During the meeting, unless it's my suffix or it's dark everywhere, I won't show anything.
+        // During the meeting, unless it's my suffix or it's dark everywhere, I won't show anything
         if (!HasEnabled || isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
         {
             return string.Empty;

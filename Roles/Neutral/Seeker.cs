@@ -68,7 +68,7 @@ internal class Seeker : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (Target == target.PlayerId)
-        {//if the target is correct
+        {//If the Target is correct
             killer.RpcIncreaseAbilityUseLimitBy(1);
             ResetTarget();
         }
@@ -86,7 +86,7 @@ internal class Seeker : RoleBase
         Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed;
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 
@@ -99,7 +99,7 @@ internal class Seeker : RoleBase
 
             if (Target == 254)
             {
-                // No target for seeker to find, normally this wont happen, seeker already loses the game.
+                // No Target for Seeker to find, normally this wont happen, Seeker already loses the game.
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcExileV2();
                 player.SetRealKiller(player);

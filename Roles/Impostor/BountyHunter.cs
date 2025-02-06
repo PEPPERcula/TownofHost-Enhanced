@@ -56,7 +56,6 @@ internal class BountyHunter : RoleBase
         if (AmongUsClient.Instance.AmHost)
         {
             ResetTarget(Utils.GetPlayerById(playerId));
-            //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     private static void SendRPC(byte bountyId, byte targetId)
@@ -82,7 +81,7 @@ internal class BountyHunter : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        // not should shapeshifted
+        // should not Shapeshifted
         resetCooldown = false;
         return false;
     }

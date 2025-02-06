@@ -18,7 +18,7 @@ internal class Fury : RoleBase
 
     public static OptionItem KillCooldown;
     private static OptionItem AbilityCooldown;
-    private static OptionItem RageDuration;
+    private static OptionItem AbilityDuration;
     private static OptionItem SpeedInRage;
     private static OptionItem RageKillCooldown;
     private static OptionItem NotifyRageActive;
@@ -30,7 +30,7 @@ internal class Fury : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         AbilityCooldown = FloatOptionItem.Create(Id + 3, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
             .SetValueFormat(OptionFormat.Seconds);
-        RageDuration = FloatOptionItem.Create(Id + 4, "FuryRageDuration", new(2.5f, 60f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
+        AbilityDuration = FloatOptionItem.Create(Id + 4, GeneralOption.AbilityDuration, new(2.5f, 60f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
                 .SetValueFormat(OptionFormat.Seconds);
         SpeedInRage = FloatOptionItem.Create(Id + 5, "FurySpeedInRage", new(0.1f, 3f, 0.1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
             .SetValueFormat(OptionFormat.Multiplier);

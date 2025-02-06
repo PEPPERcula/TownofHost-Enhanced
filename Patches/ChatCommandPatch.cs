@@ -1081,8 +1081,7 @@ internal class ChatCommands
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         if (pc.IsAlive()) continue;
-
-                        pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                        pc.SetName(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
                     Utils.SendMessage(GetString("Message.TryFixName"), PlayerControl.LocalPlayer.PlayerId);
@@ -3052,8 +3051,7 @@ internal class ChatCommands
                 foreach (var pc in Main.AllPlayerControls)
                 {
                     if (pc.IsAlive()) continue;
-
-                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                    pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
                 }
                 ChatUpdatePatch.DoBlockChat = false;
                 Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);

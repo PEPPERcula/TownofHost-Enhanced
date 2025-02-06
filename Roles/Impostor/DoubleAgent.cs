@@ -88,7 +88,7 @@ internal class DoubleAgent : RoleBase
         SendRPC();
     }
 
-    // On vent diffuse Bastion & Agitator Bomb if DoubleAgentCanDiffuseBombs is enabled.
+    // On Vent diffuse Bastion & Agitator Bomb if DoubleAgentCanDiffuseBombs is enabled.
     // Dev Note: Add role check for OnCoEnterVentOthers and make BombedVents public in Bastion.cs.
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
@@ -162,7 +162,7 @@ internal class DoubleAgent : RoleBase
             CurrentBombedTime = -1;
     }
 
-    // If bomb is active set timer after meeting.
+    // If Bomb is active set timer after meeting.
     public override void AfterMeetingTasks()
     {
         CurrentBombedTime = BombExplosionTimer.GetFloat() + 1f;
@@ -193,7 +193,7 @@ internal class DoubleAgent : RoleBase
     }
 
     // Set timer on Double Agent for Non-Modded Clients.
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 
@@ -218,7 +218,7 @@ internal class DoubleAgent : RoleBase
                 if (ChangeRoleToOnLast.GetValue() == 1) // Random
                     Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
-                // If role is not on Impostor team remove all Impostor addons if any.
+                // If role is not on Impostor team remove all Impostor Add-ons if any.
                 if (!Role.IsImpostorTeam())
                 {
                     foreach (CustomRoles allAddons in player.GetCustomSubRoles())
@@ -229,7 +229,7 @@ internal class DoubleAgent : RoleBase
                         }
                     }
                 }
-                // If Role is ImpostorTOHO aka Admired Impostor opt give Admired Addon if player dose not already have it.
+                // If Role is ImpostorTOHO aka Admired Impostor opt give Admired Add-on if player dose not already have it.
                 if (Role == CustomRoles.ImpostorTOHO && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
 

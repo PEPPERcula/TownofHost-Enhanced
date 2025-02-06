@@ -23,7 +23,7 @@ public class SabotageSystemPatch
             if (!Options.SabotageTimeControl.GetBool()) return;
             if (GameStates.AirshipIsActive) return;
 
-            // If Reactor sabotage is end
+            // If Reactor Sabotage is end
             if (!__instance.IsActive || !SetDurationForReactorSabotage)
             {
                 if (!SetDurationForReactorSabotage && !__instance.IsActive)
@@ -79,7 +79,7 @@ public class SabotageSystemPatch
             Logger.Info($" {SetDurationForReactorSabotage}", "HeliSabotageSystemPatch - SetDurationCriticalSabotage");
             SetDurationForReactorSabotage = false;
 
-            // Set time limit reactor (The Airship)
+            // Set time limit Reactor (The Airship)
             __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
         }
     }
@@ -105,7 +105,7 @@ public class SabotageSystemPatch
             Logger.Info($" {SetDurationForO2Sabotage}", "LifeSuppSystemType - SetDurationCriticalSabotage");
             SetDurationForO2Sabotage = false;
 
-            // Set time limit reactor (The Skeld/Mira HQ)
+            // Set time limit Reactor (The Skeld/Mira HQ)
             switch (ShipStatus.Instance.Type)
             {
                 case ShipStatus.MapType.Ship: // The Skeld
@@ -188,7 +188,7 @@ public class SabotageSystemPatch
                     {
                         if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                         {
-                            // Need for display player names if player is desync Impostor
+                            // Need for display player names if player is Desync Impostor
                             Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
                         }
                     }
@@ -215,7 +215,7 @@ public class SabotageSystemPatch
                 return true;
             }
 
-            // No matter if the blackout sabotage is sounded (beware of misdirection as it flies under the host's name)
+            // No matter if the Blackout Sabotage is sounded (beware of misdirection as it flies under the Host's name)
             if (amount.HasBit(SwitchSystem.DamageSystem))
             {
                 return true;
@@ -259,25 +259,50 @@ public class SabotageSystemPatch
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
     public static class ElectricTaskInitializePatch
     {
+        private static long LastUpdate;
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (var pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage called", "ElectricTask");
         }
     }
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
     public static class ElectricTaskCompletePatch
     {
+        private static long LastUpdate;
+
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage fixed", "ElectricTask");
         }
     }
     // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
-    // Method called when sabotage occurs
+    // Method called when Sabotage occurs
     [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.UpdateSystem))] // SetInitialSabotageCooldown - set sabotage cooldown in start game
     public static class SabotageSystemTypeRepairDamagePatch
     {
@@ -336,7 +361,7 @@ public class SabotageSystemPatch
                 return;
             }
 
-            // Set cooldown sabotages
+            // Set Cooldown Sabotages
             __instance.Timer = modifiedCooldownSec;
             __instance.IsDirty = true;
         }
@@ -353,7 +378,7 @@ public class SabotageSystemPatch
                     newReader.Recycle();
                 }
 
-                // When the camera is disabled, the vanilla player opens the camera so it does not blink.
+                // When Camera is disabled, the vanilla player opens the Camera so it does not blink.
                 if (amount == SecurityCameraSystemType.IncrementOp)
                 {
                     var camerasDisabled = Utils.GetActiveMapName() switch

@@ -3,7 +3,6 @@ using TOHE.Modules;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 
-
 namespace TOHE.Roles.Impostor;
 
 internal class Lightning : RoleBase

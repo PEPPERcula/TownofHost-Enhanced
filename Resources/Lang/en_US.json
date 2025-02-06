@@ -1,4 +1,4 @@
-{
+z{
     "LanguageID": "0",
     "HostText": "Host",
     "HostColor": "#902efd",
@@ -4310,8 +4310,6 @@
     "ProtectorSkillNotice": "Do a task to get a temporary shield",
 
     "FuryShapeshiftText": "Enrage",
-    "FuryRageCooldown": "Rage Cooldown",
-    "FuryRageDuration": "Rage Duration",
     "FurySpeedInRage": "Speed while Rage is active",
     "FuryRageKillCooldown": "Kill Cooldown while Rage is active",
     "FuryInRage": "Rage is active!",

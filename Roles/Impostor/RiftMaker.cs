@@ -152,7 +152,7 @@ internal class RiftMaker : RoleBase
         shapeshifter.Notify(GetString("RiftCreated"));
 
         SendRPC(shapeshifterId, 0);
-        //sendrpc for marked location and lasttp
+        //SendRPC for marked location and last TP
         return;
     }
 
@@ -166,14 +166,14 @@ internal class RiftMaker : RoleBase
             physics?.RpcBootFromVent(ventId);
 
             MarkedLocation.Clear();
-            //send rpc for clearing markedlocation
+            //SendRPC for clearing marked location
             SendRPC(player.PlayerId, 1);
             player.Notify(GetString("RiftsDestroyed"));
 
         }, 0.5f, "RiftMakerOnVent");
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (player == null) return;
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;

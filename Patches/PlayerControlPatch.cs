@@ -1151,44 +1151,29 @@ class FixedUpdateInNormalGamePatch
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
-        if (Options.LowLoadMode.GetBool())
+        if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
-            if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
-            {
-                BufferTime[player.PlayerId] = 30;
-                timerLowLoad = 30;
-            }
-
-            timerLowLoad--;
-
-            if (timerLowLoad > 0)
-            {
-                lowLoad = true;
-            }
-            else
-            {
-                timerLowLoad = 30;
-            }
-
-            BufferTime[player.PlayerId] = timerLowLoad;
+            BufferTime[player.PlayerId] = 30;
+            timerLowLoad = 30;
         }
+
+        timerLowLoad--;
+
+        if (timerLowLoad > 0)
+        {
+            if (Options.LowLoadMode.GetBool())
+                lowLoad = true;
+        }
+        else
+        {
+            timerLowLoad = 30;
+        }
+
+        BufferTime[player.PlayerId] = timerLowLoad;
 
         if (!lowLoad)
         {
             Zoom.OnFixedUpdate();
-
-            //try
-            //{
-            //    // ChatUpdatePatch doesn't work when host chat is hidden
-            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
-            //    {
-            //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
-            //    }
-            //}
-            //catch (Exception er)
-            //{
-            //    Logger.Error($"Error: {er}", "ChatUpdatePatch");
-            //}
         }
 
         // Only during the game
@@ -1269,7 +1254,7 @@ class FixedUpdateInNormalGamePatch
             else // We are not in lobby
             {
                 if (localplayer)
-                    CustomNetObject.FixedUpdate();
+                    CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
             }
 
             DoubleTrigger.OnFixedUpdate(player);
@@ -1294,7 +1279,7 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp(), timerLowLoad);
 
                 player.OnFixedAddonUpdate(lowLoad);
 
@@ -1552,9 +1537,7 @@ class FixedUpdateInNormalGamePatch
                         Suffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, target));
                         break;
                 }
-                /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
-                    Mark = isBlocked ? "(true)" : "(false)";}*/
-
+                    
                 // Devourer
                 if (CustomRoles.Devourer.HasEnabled())
                 {
@@ -1689,7 +1672,7 @@ class PlayerStartPatch
         roleText.enabled = false;
     }
 }
-// Player press vent button
+// Player press Vent button
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
 class CoEnterVentPatch
 {
@@ -1709,7 +1692,7 @@ class CoEnterVentPatch
             KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
         }
 
-        // Check others enter to vent
+        // Check others enter to Vent
         if (CustomRoleManager.OthersCoEnterVent(__instance, id))
         {
             return true;
@@ -1717,7 +1700,7 @@ class CoEnterVentPatch
 
         var playerRoleClass = __instance.myPlayer.GetRoleClass();
 
-        // Prevent vanilla players from enter vents if their current role does not allow it
+        // Prevent vanilla players from enter Vents if their current role does not allow it
         if (!__instance.myPlayer.CanUseVents() || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
@@ -1739,7 +1722,7 @@ class CoEnterVentPatch
             foreach (var nextvent in vent.NearbyVents.ToList())
             {
                 if (nextvent == null) continue;
-                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                // Skip current Vent or ventid 5 in Dleks to prevent stuck
                 if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
                 CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
                 playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
@@ -1753,7 +1736,7 @@ class CoEnterVentPatch
         _ = new LateTask(() => VentSystemDeterioratePatch.ForceUpadate = false, 1f, "Set Force Upadate As False", shoudLog: false);
     }
 }
-// Player entered in vent
+// Player entered in Vent
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {

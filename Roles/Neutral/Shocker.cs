@@ -21,8 +21,8 @@ internal class Shocker : RoleBase
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
-    private static OptionItem ShockerAbilityCooldown;
-    private static OptionItem ShockerAbilityDuration;
+    private static OptionItem AbilityCooldown;
+    private static OptionItem AbilityDuration;
     private static OptionItem ShockerAbilityResetAfterMeeting;
     private static OptionItem ShockerAbilityPerRound;
     private static OptionItem ShockerShockInVents;
@@ -38,10 +38,10 @@ internal class Shocker : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
-        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
-        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        AbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
         ShockerAbilityPerRound = IntegerOptionItem.Create(Id + 12, "ShockerAbilityPerRound", new(0, 10, 1), 2, TabGroup.NeutralRoles, false)

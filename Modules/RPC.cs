@@ -352,7 +352,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
-                CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
+                int roleId = reader.ReadPackedInt32();
+                CustomRoles role = (CustomRoles)roleId;
+                Logger.Info($"playerId: {CustomRoleTargetId} - roleid {roleId} - role: {role}", "CustomRPC.SetCustomRole");
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
             case CustomRPC.SyncLobbyTimer:
@@ -505,10 +507,14 @@ internal class RPCHandlerPatch
                 byte paciefID = reader.ReadByte();
                 //playerstate:
                 {
-                    CustomRoles rola = (CustomRoles)reader.ReadPackedInt32();
+                    int rolaId = reader.ReadPackedInt32();
                     bool isdead = reader.ReadBoolean();
                     bool IsDC = reader.ReadBoolean();
-                    PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
+                    int deathReasonId = reader.ReadPackedInt32();
+
+                    CustomRoles rola = (CustomRoles)rolaId;
+                    PlayerState.DeathReason drip = (PlayerState.DeathReason)deathReasonId;
+                    
                     if (Main.PlayerStates.ContainsKey(paciefID))
                     {
                         var state = Main.PlayerStates[paciefID];
@@ -1062,7 +1068,7 @@ public class StartRpcImmediatelyPatch
         messageWriter.Write(callId);
 
         __result = messageWriter;
-        RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
+        RPC.SendRpcLogger(targetNetId, callId, SendOption.None, targetClientId);
         return false;
     }
 }

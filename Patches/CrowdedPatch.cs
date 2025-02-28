@@ -13,7 +13,7 @@ namespace TOHE.Patches.Crowded;
 internal static class Crowded
 {
     private static CreateOptionsPicker instance;
-    public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
+    public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 255;
     public static int MaxImpostors => MaxPlayers / 2;
 
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Awake))]
@@ -280,7 +280,7 @@ internal static class Crowded
     {
         public static void Postfix(ref SecurityLogger __instance)
         {
-            __instance.Timers = new Il2CppStructArray<float>(127);
+            __instance.Timers = new Il2CppStructArray<float>(255);
         }
     }
 

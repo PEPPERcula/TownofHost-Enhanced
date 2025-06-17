@@ -4071,10 +4071,10 @@
   "ExorcistOutOfUsages": "You're out of usages!",
   "ExorcistDispelled": "You're out of spells!",
   "ExorcismActiveFor": "Exorcism Duration",
-  "ExorcismPerGame": "Max exorcises per game",
+  "ExorcismPerGame": "Maximum exorcises per game",
   "ExorcismDelay": "Exorcism Delay",
   "ExorcismSacrificesToDispel": "How many sacrifices are needed to dispel",
-  "ExorcismLimitMeeting": "Max exorcises per meeting",
+  "ExorcismLimitMeeting": "Maximum exorcises per meeting",
   "ExorcismEndOnKill": "End exorcism on kill",
   "ExorcistTryHideMsg": "Try to hide Exorcist's commands",
 

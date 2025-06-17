@@ -3231,7 +3231,7 @@
 
   "InspectorTryHideMsg": "Hide <color=#0D57AF>Inspector</color>'s commands",
   "MaxInspectCheckLimit": "Maximum inspections per Game",
-  "InspectCheckLimitPerMeeting": "Maximum inspections per meeting",
+  "InspectCheckLimitPerMeeting": "Maximum inspections per Meeting",
   "InspectCheckTargetKnow": "Targets know they were checked by <color=#0D57AF>Inspector</color>",
   "InspectCheckOtherTargetKnow": "Targets know who they were checked with",
   "InspectorDead": "You can not use your power after death",
@@ -3672,7 +3672,7 @@
   "DCanGuessCoven": "Can Guess <color=#ac42f2>Coven</color>",
   "DCanGuessAdt": "Can Guess Add-Ons",
   "DoomsayerAdvancedSettings": "Advanced Settings",
-  "DoomsayerMaxNumberOfGuessesPerMeeting": "Maximum number of guesses per meeting",
+  "DoomsayerMaxNumberOfGuessesPerMeeting": "Maximum number of guesses per Meeting",
   "DoomsayerKillCorrectlyGuessedPlayers": "Kill correctly guessed players",
   "DoomsayerDoesNotSuicideWhenMisguessing": "<color=#14f786>Doomsayer</color> does not suicide when misguessing",
   "DoomsayerMisguessRolePrevGuessRoleUntilNextMeeting": "Misguessing role prevents guessing roles until next meeting",
